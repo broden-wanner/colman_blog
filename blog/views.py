@@ -7,7 +7,17 @@ from django.http import Http404
 
 @login_required
 def blogHomeView(request):
-	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date', '-edited_date')
+	posts = Post.objects.all()
+	#Adds most recent date for posts that never had it
+	for post in posts:
+		if post.edited_date == None:
+			if post.edited_date:
+				post.most_recent_date = post.edited_date
+				post.save()
+			else:
+				post.most_recent_date = post.published_date
+				post.save()
+	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-most_recent_date')
 	return render(request, 'index.html', {'posts': posts})
 
 @login_required
@@ -18,11 +28,11 @@ def blogDetailView(request, pk):
 	except Post.DoesNotExist:
 		raise Http404("No Post matches given query.")
 	try:
-		older_post = Post.objects.filter(edited_date__lt=post.most_recent_date()).order_by('edited_date')[0]
+		older_post = Post.objects.filter(most_recent_date__lt=post.most_recent_date).order_by('-most_recent_date')[0]
 	except (Post.DoesNotExist, IndexError):
 		older_post = None
 	try:
-		newer_post = Post.objects.filter(edited_date__gt=post.most_recent_date()).order_by('edited_date')[0]
+		newer_post = Post.objects.filter(most_recent_date__gt=post.most_recent_date).order_by('most_recent_date')[0]
 	except (Post.DoesNotExist, IndexError):
 		newer_post = None
 	return render(request, 'detail.html', {'post': post, 'newer_post': newer_post, 'older_post': older_post})
@@ -35,6 +45,7 @@ def blogCreateView(request):
 			post = form.save(commit=False)
 			post.author = request.user
 			post.published_date = timezone.now()
+			post.most_recent_date = timezone.now()
 			post.save()
 			return redirect('detail', pk=post.pk)
 	else:
@@ -49,6 +60,7 @@ def blogUpdateView(request, pk):
 		if form.is_valid() and post.author == request.user:
 			post = form.save(commit=False)
 			post.edited_date = timezone.now()
+			post.most_recent_date = timezone.now()
 			post.save()
 			return redirect('detail', pk=post.pk)
 	else:

@@ -23,14 +23,14 @@
 	{% endif %}
 	<ul class="pager">
 		{% if older_post %}
-			<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">{{ older_post }}</a></li>
+			<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">Previous Post: {{ older_post }}</a></li>
 		{% else %}
-			<li class="previous"><a href="#">Older Post</a></li>
+			<li class="previous disabled"><a href="#">No Older Posts</a></li>
 		{% endif %}
 		{% if newer_post %}
-			<li class="next"><a href="#">{{ newer_post }}</a></li>
+			<li class="next"><a href="{% url 'detail' pk=newer_post.pk %}">Next Post: {{ newer_post }}</a></li>
 		{% else %}
-			<li class="next"><a href="#">Newer Post</a></li>
+			<li class="next disabled"><a href="#">No Newer Posts</a></li>
 		{% endif %}
 	</ul>
 {% endblock %}
