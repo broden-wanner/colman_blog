@@ -29,11 +29,11 @@ def blogDetailView(request, pk):
 		raise Http404("No Post matches given query.")
 	try:
 		older_post = Post.objects.filter(most_recent_date__lt=post.most_recent_date).order_by('-most_recent_date')[0]
-	except (Post.DoesNotExist, IndexError):
+	except (Post.DoesNotExist, IndexError, ValueError):
 		older_post = None
 	try:
 		newer_post = Post.objects.filter(most_recent_date__gt=post.most_recent_date).order_by('most_recent_date')[0]
-	except (Post.DoesNotExist, IndexError):
+	except (Post.DoesNotExist, IndexError, ValueError):
 		newer_post = None
 	return render(request, 'detail.html', {'post': post, 'newer_post': newer_post, 'older_post': older_post})
 
