@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{% for post in posts %}
+		<!--Displays title of post, author, and 'new' label if it was publushed or edited within a day-->
+		<h1><a href="{% url 'detail' pk=post.pk %}">{{ post.title }}</a> <small>by {{ post.author }}</small>
+		{% if post.was_published_or_edited_recently %}
+			<span class="label label-default">New</span>
+		{% endif %}
+		</h1>
+		<!--Displays post text and date of editing or publication-->
+		<p>{{ post.text|linebreaksbr }}</p>
+		{% if post.published_date %}
+			<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
+				{% if post.edited_date %}
+					| Edited: {{ post.edited_date|date:"l, F jS, Y \a\t P" }}</p>
+				{% else %}
+					</p>
+				{% endif %}
+		{% endif %}
+	{% endfor %}
+{% endblock %}

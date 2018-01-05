@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>Delete Post</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{% if post.author == user %}
+			<p>Are you sure you want to delete "{{ post.title }}"?</p>
+			<button type="submit" class="btn btn-primary">Delete</button>
+		{% else %}
+			<p>Um... sir, you can't delete this. I don't know how you got here, but just leave</p>
+		{% endif %}
+	</form>
+{% endblock %}

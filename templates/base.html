@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Colman-Egan Band Blog</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	</head>
+	<body>
+		
+	<header class="container page-header">
+		<h1><a href="/">Colman-Egan Band Blog</a></h1>
+		<div class="row">
+		{% if user.is_authenticated %}
+			<!--Display User info-->
+			<div class="col-sm-6 text-left">
+				<p>Hi {{ user.username }}!</p>
+				<p><a href="{% url 'logout' %}">Logout</a></p>
+			</div>
+			<!--New Post-->
+			<div class="col-sm-6 text-right">
+				<a href="{% url 'create' %}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> New Post</a>
+			</div>
+		{% endif %}
+		</div>
+	</header>
+
+	<main class="container">
+		<div class="row">
+			<div class="col-sm-8">
+				{% block content %}
+				{% endblock %}
+			</div>
+		</div>
+	</main>
+
+	<footer class="container" style="padding: 20px 20px 20px 20px">
+		<p><small><span class="glyphicon glyphicon-copyright-mark"></span> We ain't got no copyright lol.</small></p>
+	</footer>
+
+	</body>
+</html>

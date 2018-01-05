@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>{{ post.title }} <small>by {{post.author}}</small></h1>
+	<p>{{ post.text|linebreaksbr }}</p>
+	{% if post.published_date %}
+		<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
+			{% if post.edited_date %}
+				| Edited: {{ post.edited_date|date:"l, F jS, Y \a\t P" }}</p>
+			{% endif %}
+	{% endif %}
+	<!--Displays options for editing only if the author is the logged in user -->
+	{% if user == post.author %}
+		<div class="btn-group">
+			<a class="btn btn-primary" href="{% url 'edit' pk=post.pk %}">Edit Post</a>
+			<a class="btn btn-primary" href="{% url 'delete' pk=post.pk %}">Delete Post</a>
+		</div>
+	{% else %}
+		<div class="btn-group">
+			<button type="button" class="btn btn-primary disabled">Edit Post</button>
+			<button type="button" class="btn btn-primary disabled">Delete Post</button>
+		</div>
+	{% endif %}
+	<ul class="pager">
+		{% if older_post %}
+			<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">{{ older_post }}</a></li>
+		{% else %}
+			<li class="previous"><a href="#">Older Post</a></li>
+		{% endif %}
+		{% if newer_post %}
+			<li class="next"><a href="#">{{ newer_post }}</a></li>
+		{% else %}
+			<li class="next"><a href="#">Newer Post</a></li>
+		{% endif %}
+	</ul>
+{% endblock %}
