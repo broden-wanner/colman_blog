@@ -13,7 +13,8 @@ class Post(models.Model):
 	def was_published_or_edited_recently(self):
 		now = timezone.now()
 		pub_recently = (now - datetime.timedelta(days=1) <= self.published_date <= now)
-		edit_recently = (now - datetime.timedelta(days=1) <= self.edited_date <= now)
+		if self.edited_date:
+			edit_recently = (now - datetime.timedelta(days=1) <= self.edited_date <= now)
 		return pub_recently or edit_recently
 
 	def most_recent_date(self):

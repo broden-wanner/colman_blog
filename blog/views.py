@@ -7,7 +7,7 @@ from django.http import Http404
 
 @login_required
 def blogHomeView(request):
-	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-edited_date', '-published_date')
+	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date', '-edited_date')
 	return render(request, 'index.html', {'posts': posts})
 
 @login_required
