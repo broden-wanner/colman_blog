@@ -21,6 +21,7 @@
 			<button type="button" class="btn btn-primary disabled">Delete Post</button>
 		</div>
 	{% endif %}
+	<!--Displays newer and older post buttons-->
 	<ul class="pager">
 		{% if older_post %}
 			<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">Previous Post: {{ older_post }}</a></li>
@@ -33,4 +34,24 @@
 			<li class="next disabled"><a href="#">No Newer Posts</a></li>
 		{% endif %}
 	</ul>
+	<hr>
+	<!--New Comment Form-->
+	<h3>Comments</h3>
+	<div class="row">
+		<form method="POST">
+			<div class="form-group col-sm-10">
+				{% csrf_token %}
+				{{ create_comment_form.text.errors }}
+				{{ create_comment_form.text }}
+			</div>
+			<button type="submit" class="btn btn-primary col-sm-2" value="Post Comment">Comment</button>
+		</form>
+	</div>
+	<!--Comment Section-->
+	{% if comments %}
+		{% for comment in comments %}
+			<p><strong>{{ comment.author }}</strong> <small>{{ comment.time_since_post }}</small></p>
+			<p>{{ comment.text }}</p>
+		{% endfor %}
+	{% endif %}
 {% endblock %}
