@@ -6,11 +6,13 @@ class Post(models.Model):
 	author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 	title = models.CharField(max_length=200)
 	text = models.TextField()
-	date_created = models.DateTimeField(default=timezone.now)
-	published_date = models.DateTimeField(blank=True)
+	published_date = models.DateTimeField(blank=True, default=timezone.now)
 	edited_date = models.DateTimeField(blank=True, null=True)
 	most_recent_date = models.DateTimeField(blank=True, null=True)
 	comments = models.IntegerField(default=0)
+
+	def __str__(self):
+		return self.title
 
 	def was_published_or_edited_recently(self):
 		now = timezone.now()
@@ -24,17 +26,14 @@ class Post(models.Model):
 	def update_comments(self):
 		self.comments = int(Comment.objects.filter(post__pk=self.pk).count())
 
-	def __str__(self):
-		return self.title
-
 class Comment(models.Model):
 	post = models.ForeignKey('Post', on_delete=models.CASCADE)
 	author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
 	text = models.TextField()
-	date_created = models.DateTimeField(default=timezone.now)
-	published_date = models.DateTimeField(blank=True)
+	published_date = models.DateTimeField(blank=True, default=timezone.now)
 	edited_date = models.DateTimeField(blank=True, null=True)
 	most_recent_date = models.DateTimeField(blank=True, null=True)
+	edited = models.BooleanField(default=False)
 
 	def __str__(self):
 		return "Comment on post %s" % (self.post.title)
@@ -45,15 +44,38 @@ class Comment(models.Model):
 		if time_since < datetime.timedelta(minutes=1):
 			return "%i seconds ago" % (time_since.seconds)
 		elif time_since < datetime.timedelta(hours=1):
-			return "%i minutes ago" % (time_since.seconds / 60)
+			elapsed_time = time_since.seconds / 60
+			if int(elapsed_time) == 1:
+				return "1 minute ago"
+			else:
+				return "%i minutes ago" % (elapsed_time)
 		elif time_since < datetime.timedelta(days=1):
-			return "%i hours ago" % (time_since.seconds / 60 / 60)
+			elapsed_time = time_since.seconds / 3600
+			if int(elapsed_time) == 1:
+				return "1 hour ago"
+			else:
+				return "%i hours ago" % (elapsed_time)
 		elif time_since < datetime.timedelta(weeks=1):
-			return "%i days ago" % (time_since.days)
+			elapsed_time = time_since.days
+			if int(elapsed_time) == 1:
+				return "1 day ago"
+			else:
+				return "%i days ago" % (elapsed_time)
 		elif time_since < datetime.timedelta(weeks=4):
-			return "%i weeks ago" % (time_since.days / 7)
+			elapsed_time = time_since.days / 7
+			if int(elapsed_time) == 1:
+				return "1 week ago"
+			else:
+				return "%i weeks ago" % (elapsed_time)
 		elif time_since < datetime.timedelta(weeks=52):
-			return "%i months ago" % (time_since.days / 30)
+			elapsed_time = time_since.days / 30
+			if int(elapsed_time) == 1:
+				return "1 month ago"
+			else:
+				return "%i months ago" % (elapsed_time)
 		else:
-			return "%i years ago" % (time_since / 365)
-			
+			elapsed_time = time_since.days / 365
+			if int(elapsed_time) == 1:
+				return "1 year ago"
+			else:
+				return "%i years ago" % (elapsed_time)			

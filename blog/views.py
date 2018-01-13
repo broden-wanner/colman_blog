@@ -16,10 +16,6 @@ def blogHomeView(request):
 def blogDetailView(request, pk):
 	#Post Section
 	post = get_object_or_404(Post, pk=pk)
-	try:
-		post = Post.objects.get(pk=pk)
-	except Post.DoesNotExist:
-		raise Http404("No Post matches given query.")
 	#Creates newer and older post buttons
 	try:
 		older_post = Post.objects.filter(most_recent_date__lt=post.most_recent_date).order_by('-most_recent_date')[0]
@@ -88,3 +84,19 @@ def blogDeleteView(request, pk):
 		post.delete()
 		return redirect('index')
 	return render(request, 'delete.html', {'post': post})
+
+@login_required
+def blogEditComment(request, pk):
+	comment = get_object_or_404(Comment, pk=pk)
+	if request.method == "POST":
+		form = CommentForm(request.POST, instance=comment)
+		if form.is_valid() and comment.author == request.user:
+			comment = form.save(commit=False)
+			comment.edited_date = timezone.now()
+			comment.most_recent_date = timezone.now()
+			comment.edited = True
+			comment.save()
+			return redirect('detail', pk=comment.post.pk)
+	else:
+		form = CommentForm(instance=comment)
+	return render(request, 'edit_comment.html', {'form': form, 'comment': comment})

@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Colman-Egan Blog</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="shortcut icon" href="{% static 'images/llama_favicon.ico' %}" type="image/x-icon">
+		<link rel="stylesheet" href="{% static 'css/base.css' %}">
 	</head>
 	<body>
-		
-	<header class="container page-header">
-		<h1><a href="/">Colman-Egan Blog</a></h1>
-		<div class="row">
-		{% if user.is_authenticated %}
-			<!--Display User info-->
-			<div class="col-sm-6 text-left">
-				<p>Hi {{ user.username }}!</p>
-				<p><a href="{% url 'logout' %}">Logout</a></p>
-			</div>
-			<!--New Post-->
-			<div class="col-sm-6 text-right">
-				<a href="{% url 'create' %}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> New Post</a>
-			</div>
-		{% endif %}
+		<div class="container-fluid">
+			<header class="page-header row">
+				<div class="col-sm-8">
+					<h1><a href="/">Colman-Egan Blog</a></h1>
+				</div>
+				<div class="col-sm-4">
+					<ul>
+						{% if user.is_authenticated %}
+							<li><a class="btn btn-default" href="{% url 'create' %}"><span class="glyphicon glyphicon-plus"></span> New Post</a></li>
+							<li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+							<li><p id="display-user"><span class="glyphicon glyphicon-user"></span> Hi, {{ user.username }}.</p></li>
+						{% endif %}
+		    		</ul>
+	    		</div>
+			</header>
 		</div>
-	</header>
 
-	<main class="container">
-		<div class="row">
-			<div class="col-sm-9">
-				{% block content %}
-				{% endblock %}
+		<main>
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-9">
+						{% block content %}
+						{% endblock %}
+					</div>
+				</div>
 			</div>
-		</div>
-	</main>
+		</main>
 
-	<footer class="container" style="padding: 20px 20px 20px 20px">
-		<p><small><span class="glyphicon glyphicon-copyright-mark"></span> We ain't got no copyright lol.</small></p>
-	</footer>
-
+		<footer>
+			<div class="row">
+				<p><small><span class="glyphicon glyphicon-copyright-mark"></span> We ain't got no copyright, lol.</small></p>
+			</div>
+		</footer>
 	</body>
 </html>

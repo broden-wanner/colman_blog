@@ -1,42 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h1>{{ post.title }} <small>by {{post.author}}</small></h1>
-	<p>{{ post.text|linebreaksbr }}</p>
-	{% if post.published_date %}
-		<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
-			{% if post.edited_date %}
-				| Edited: {{ post.edited_date|date:"l, F jS, Y \a\t P" }}</p>
+	<div class="row">
+		<div class="post">
+			<h1>{{ post.title }} <small>by {{post.author}}</small></h1>
+			<p>{{ post.text|linebreaksbr }}</p>
+			{% if post.published_date %}
+				<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
+					{% if post.edited_date %}
+						| Edited: {{ post.edited_date|date:"l, F jS, Y \a\t P" }}</p>
+					{% endif %}
 			{% endif %}
-	{% endif %}
-	<!--Displays options for editing only if the author is the logged in user -->
-	{% if user == post.author %}
-		<div class="btn-group">
-			<a class="btn btn-primary" href="{% url 'edit' pk=post.pk %}">Edit Post</a>
-			<a class="btn btn-primary" href="{% url 'delete' pk=post.pk %}">Delete Post</a>
+			<!--Displays options for editing only if the author is the logged in user -->
+			{% if user == post.author %}
+				<div class="btn-group">
+					<a class="btn btn-default" href="{% url 'edit' pk=post.pk %}">Edit Post</a>
+					<a class="btn btn-default" href="{% url 'delete' pk=post.pk %}">Delete Post</a>
+				</div>
+			{% else %}
+				<div class="btn-group">
+					<button type="button" class="btn btn-default disabled">Edit Post</button>
+					<button type="button" class="btn btn-default disabled">Delete Post</button>
+				</div>
+			{% endif %}
 		</div>
-	{% else %}
-		<div class="btn-group">
-			<button type="button" class="btn btn-primary disabled">Edit Post</button>
-			<button type="button" class="btn btn-primary disabled">Delete Post</button>
-		</div>
-	{% endif %}
+	</div>
 	<!--Displays newer and older post buttons-->
-	<ul class="pager">
-		{% if older_post %}
-			<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">Previous Post: {{ older_post }}</a></li>
-		{% else %}
-			<li class="previous disabled"><a href="#">No Older Posts</a></li>
-		{% endif %}
-		{% if newer_post %}
-			<li class="next"><a href="{% url 'detail' pk=newer_post.pk %}">Next Post: {{ newer_post }}</a></li>
-		{% else %}
-			<li class="next disabled"><a href="#">No Newer Posts</a></li>
-		{% endif %}
-	</ul>
+	<div class="row">
+		<ul class="pager">
+			{% if older_post %}
+				<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">Previous Post: {{ older_post }}</a></li>
+			{% else %}
+				<li class="previous disabled"><a href="#">No Older Posts</a></li>
+			{% endif %}
+			{% if newer_post %}
+				<li class="next"><a href="{% url 'detail' pk=newer_post.pk %}">Next Post: {{ newer_post }}</a></li>
+			{% else %}
+				<li class="next disabled"><a href="#">No Newer Posts</a></li>
+			{% endif %}
+		</ul>
+	</div>
 	<hr>
 	<!--New Comment Form-->
 	<h3>Comments</h3>
+	<p><strong>{{ user }}</strong></p>
 	<div class="row">
 		<form method="POST">
 			<div class="form-group col-sm-10">
@@ -44,14 +51,28 @@
 				{{ create_comment_form.text.errors }}
 				{{ create_comment_form.text }}
 			</div>
-			<button type="submit" class="btn btn-primary col-sm-2" value="Post Comment">Comment</button>
+			<button type="submit" class="btn btn-default col-sm-2" value="Post Comment">Comment</button>
 		</form>
 	</div>
 	<!--Comment Section-->
-	{% if comments %}
-		{% for comment in comments %}
-			<p><strong>{{ comment.author }}</strong> <small>{{ comment.time_since_post }}</small></p>
-			<p>{{ comment.text }}</p>
-		{% endfor %}
-	{% endif %}
+	<div class="comment-section">
+		{% if comments %}
+			{% for comment in comments %}
+				<p><strong>{{ comment.author }}
+				{% if comment.edited %}
+					(Edited)
+				{% endif %}
+				</strong> <small>{{ comment.time_since_post }}</small></p>
+				<div class="col-sm-10">
+					<p>{{ comment.text }}</p>
+				</div>
+				<div class="col-sm-2">
+					{% if comment.author == user %}
+						<a href="{% url 'edit_comment' pk=comment.pk %}" class="btn btn-default">Edit Comment</a>
+					{% endif %}
+				</div>
+				<br><br>
+			{% endfor %}
+		{% endif %}
+	</div>
 {% endblock %}

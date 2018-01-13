@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h1>Edit Post</h1>
-	{% if post.author == user %}
+	<h1>Edit Comment</h1>
+	{% if comment.author == user %}
 		<form method="POST">
 			{% csrf_token %}
 			{{ form.as_p }}
