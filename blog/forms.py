@@ -6,8 +6,8 @@ class PostForm(forms.ModelForm):
 		model = Post
 		fields = ('title', 'text', 'image',)
 		widgets = {
-			'title': forms.TextInput(attrs={'class': 'form-control'}),
-			'text': forms.Textarea(attrs={'class': 'form-control'}),
+			'title': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'}),
+			'text': forms.Textarea(attrs={'class': 'form-control', 'autocomplete': 'off'}),
 		}
 
 class CommentForm(forms.ModelForm):
@@ -16,5 +16,5 @@ class CommentForm(forms.ModelForm):
 		model = Comment
 		fields = ('text',)
 		widgets = {
-		    'text': forms.TextInput(attrs={'placeholder': 'Add a comment here...', 'class': 'form-control'}),
+		    'text': forms.TextInput(attrs={'placeholder': 'Add a comment here...', 'class': 'form-control', 'autocomplete': 'off'}),
 		}
