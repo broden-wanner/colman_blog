@@ -57,6 +57,7 @@ def blogCreateView(request):
 			post.author = request.user
 			post.published_date = timezone.now()
 			post.most_recent_date = timezone.now()
+			post.create_embed_link()
 			post.save()
 			return redirect('detail', pk=post.pk)
 	else:
@@ -72,6 +73,7 @@ def blogUpdateView(request, pk):
 			post = form.save(commit=False)
 			post.edited_date = timezone.now()
 			post.most_recent_date = timezone.now()
+			post.create_embed_link()
 			post.save()
 			return redirect('detail', pk=post.pk)
 	else:

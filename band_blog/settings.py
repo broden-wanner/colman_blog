@@ -130,7 +130,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #Email Setup
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = 'dky50GTH'
+EMAIL_HOST_PASSWORD = '*****'
 EMAIL_HOST_USER = 'poseidensea@gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True

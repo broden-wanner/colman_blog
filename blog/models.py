@@ -11,6 +11,8 @@ class Post(models.Model):
 	most_recent_date = models.DateTimeField(blank=True, null=True)
 	comments = models.IntegerField(default=0)
 	image = models.ImageField(blank=True, null=True, upload_to='images/')
+	youtube_video = models.URLField(max_length=300, blank=True, null=True)
+	embed_link = models.URLField(max_length=300, blank=True, null=True)
 
 	def __str__(self):
 		return self.title
@@ -26,6 +28,10 @@ class Post(models.Model):
 
 	def update_comments(self):
 		self.comments = int(Comment.objects.filter(post__pk=self.pk).count())
+
+	def create_embed_link(self):
+		end_code = self.youtube_video[self.youtube_video.find('=') + 1:]
+		self.embed_link = 'https://www.youtube.com/embed/' + end_code + '?rel=0'
 
 class Comment(models.Model):
 	post = models.ForeignKey('Post', on_delete=models.CASCADE)

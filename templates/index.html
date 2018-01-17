@@ -15,6 +15,9 @@
 			{% if post.image %}
 				<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
 			{% endif %}
+			{% if post.youtube_video %}
+				<iframe width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+			{% endif %}
 			{% if post.published_date %}
 				<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
 					{% if post.edited_date %}
