@@ -30,8 +30,9 @@ class Post(models.Model):
 		self.comments = int(Comment.objects.filter(post__pk=self.pk).count())
 
 	def create_embed_link(self):
-		end_code = self.youtube_video[self.youtube_video.find('=') + 1:]
-		self.embed_link = 'https://www.youtube.com/embed/' + end_code + '?rel=0'
+		if self.youtube_video:
+			end_code = self.youtube_video[self.youtube_video.find('=') + 1:]
+			self.embed_link = 'https://www.youtube.com/embed/' + end_code + '?rel=0'
 
 class Comment(models.Model):
 	post = models.ForeignKey('Post', on_delete=models.CASCADE)
