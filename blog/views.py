@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from .models import Post, Comment
-from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 
 @login_required
 def blogHomeView(request):
@@ -44,13 +46,12 @@ def blogDetailView(request, pk):
 			return redirect('detail', pk=post.pk)
 	else:
 		create_comment_form = CommentForm(prefix="create")
-	#Edit Comment Section
 	return render(request, 'detail.html', {'post': post, 'newer_post': newer_post, 'older_post': older_post, 'comments': comments, 'create_comment_form': create_comment_form})
 
 @login_required
 def blogCreateView(request):
 	if request.method == "POST":
-		form = PostForm(request.POST)
+		form = PostForm(request.POST, request.FILES)
 		if form.is_valid():
 			post = form.save(commit=False)
 			post.author = request.user
@@ -66,7 +67,7 @@ def blogCreateView(request):
 def blogUpdateView(request, pk):
 	post = get_object_or_404(Post, pk=pk)
 	if request.method == "POST":
-		form = PostForm(request.POST, instance=post)
+		form = PostForm(request.POST, request.FILES, instance=post)
 		if form.is_valid() and post.author == request.user:
 			post = form.save(commit=False)
 			post.edited_date = timezone.now()

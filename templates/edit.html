@@ -3,11 +3,13 @@
 {% block content %}
 	<h1>Edit Post</h1>
 	{% if post.author == user %}
-		<form method="POST">
-			{% csrf_token %}
-			{{ form.as_p }}
-			<button class="btn btn-default" type="submit">Save</button>
-		</form>
+		<div class="form-group">
+			<form method="POST" enctype="multipart/form-data">
+				{% csrf_token %}
+				{{ form.as_p }}
+				<button class="btn btn-default" type="submit">Save Post</button>
+			</form>
+		</div>
 	{% else %}
 		<p>Um... sir, you can't edit this. I don't know how you got here, but just leave.</p>
 	{% endif %}

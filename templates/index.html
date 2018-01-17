@@ -12,6 +12,9 @@
 			</h1>
 			<!--Displays post text and date of editing or publication-->
 			<p>{{ post.text|linebreaksbr }}</p>
+			{% if post.image %}
+				<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
+			{% endif %}
 			{% if post.published_date %}
 				<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
 					{% if post.edited_date %}

@@ -10,6 +10,7 @@ class Post(models.Model):
 	edited_date = models.DateTimeField(blank=True, null=True)
 	most_recent_date = models.DateTimeField(blank=True, null=True)
 	comments = models.IntegerField(default=0)
+	image = models.ImageField(blank=True, null=True, upload_to='images/')
 
 	def __str__(self):
 		return self.title
