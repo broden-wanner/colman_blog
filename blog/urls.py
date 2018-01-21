@@ -6,11 +6,12 @@ from django.conf import settings
 
 urlpatterns = [
 	path('', views.blogHomeView, name='index'),
-	path('post/<int:pk>/', views.blogDetailView, name='detail'),
+	path('post/<slug:slug>/', views.blogDetailView, name='detail'),
 	path('post/new/', views.blogCreateView, name='create'),
-	path('post/<int:pk>/edit', views.blogUpdateView, name='edit'),
-	path('post/<int:pk>/delete', views.blogDeleteView, name='delete'),
-	path('post/<int:pk>/comment/edit', views.blogEditComment, name='edit_comment'),
+	path('post/<slug:slug>/edit', views.blogUpdateView, name='edit'),
+	path('post/<slug:slug>/delete', views.blogDeleteView, name='delete'),
+	path('post/<slug:slug>/comment/<int:pk>/edit', views.blogEditComment, name='edit_comment'),
+	path('post/<slug:slug>/like', views.blogToggleLike, name='like_toggle'),
 ]
 
 if settings.DEBUG:

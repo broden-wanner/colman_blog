@@ -1,33 +1,40 @@
 {% extends 'base.html' %}
 
+{% load staticfiles %}
+
 {% block content %}
 	{% for post in posts %}
-	<div class="row">
-		<div class="post">
-			<!--Displays title of post, author, and 'new' label if it was publushed or edited within a day-->
-			<h1><a href="{% url 'detail' pk=post.pk %}">{{ post.title }}</a> <small>by {{ post.author }}</small>
-			{% if post.was_published_or_edited_recently %}
-				<span class="label label-default">New</span>
-			{% endif %}
-			</h1>
-			<!--Displays post text and date of editing or publication-->
-			<p>{{ post.text|linebreaksbr }}</p>
-			{% if post.image %}
-				<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
-			{% endif %}
-			{% if post.youtube_video %}
-				<iframe width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-			{% endif %}
-			{% if post.published_date %}
-				<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
-					{% if post.edited_date %}
-						| Edited: {{ post.edited_date|date:"l, F jS, Y \a\t P" }}</p>
-					{% else %}
-						</p>
+		<div class="row">
+			<div class="post">
+				<!--Displays title of post, author, and 'new' label if it was publushed or edited within a day-->
+				<h1><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a> <small>by {{ post.author }}</small>
+				{% if post.was_published_or_edited_recently %}
+					<span class="label label-default">New</span>
+				{% endif %}
+				</h1>
+				<!--Displays post text and date of editing or publication-->
+				<div class="post-body">
+					<p>{{ post.text|linebreaksbr }}</p>
+					{% if post.image %}
+						<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
 					{% endif %}
-			{% endif %}
-			<p>{{ post.comments }} comments</p>
+					{% if post.youtube_video %}
+						<iframe width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+					{% endif %}
+				</div>
+				<div class="published-edited-dates">
+					{% if post.edited_date %}
+						<p>Edited on {{ post.edited_date|date:"F jS, Y" }}</p>
+					{% else %}
+						<p>Published on {{ post.published_date|date:"F jS, Y" }}</p>
+					{% endif %}
+					<p>{{ post.likes.count }} likes and {{ post.comment_count }} comments</p>
+				</div>
+				{% if forloop.counter != posts|length %}
+					<hr>
+				{% endif %}
+			</div>
 		</div>
-	</div>
 	{% endfor %}
+	<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
 {% endblock %}

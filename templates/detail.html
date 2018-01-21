@@ -3,27 +3,41 @@
 {% block content %}
 	<div class="row">
 		<div class="post">
-			<h1>{{ post.title }} <small>by {{post.author}}</small></h1>
-			<p>{{ post.text|linebreaksbr }}</p>
-			{% if post.image %}
-				<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
-			{% endif %}
-			{% if post.youtube_video %}
-				<iframe width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-			{% endif %}
+			<h1>{{ post.title }} <small>by {{ post.author }}</small></h1>
+			<div class="post-body">
+				<p>{{ post.text|linebreaksbr }}</p>
+				{% if post.image %}
+					<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
+				{% endif %}
+				{% if post.youtube_video %}
+					<iframe width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+				{% endif %}
+			</div>
 			{% if post.published_date %}
-				<p>Published: {{ post.published_date|date:"l, F jS, Y \a\t P" }}
-					{% if post.edited_date %}
-						| Edited: {{ post.edited_date|date:"l, F jS, Y \a\t P" }}</p>
-					{% endif %}
+			<div class="published-edited-dates">
+				{% if post.edited_date %}
+					<p>Edited on {{ post.edited_date|date:"F jS, Y" }}</p>
+				{% else %}
+					<p>Published on {{ post.published_date|date:"F jS, Y" }}</p>
+				{% endif %}
+				<p>{{ post.likes.count }} likes and {{ comment_list|length }} comments</p>
+			</div>
 			{% endif %}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
 			<!--Displays options for editing only if the author is the logged in user -->
 			{% if user == post.author %}
-				<div class="btn-group">
-					<a class="btn btn-default" href="{% url 'edit' pk=post.pk %}">Edit Post</a>
-					<a class="btn btn-default" href="{% url 'delete' pk=post.pk %}">Delete Post</a>
+				<div class="btn-group" id="edit-delete-buttons">
+					<a class="btn btn-default" href="{% url 'edit' slug=post.slug %}">Edit Post</a>
+					<a class="btn btn-default" href="{% url 'delete' slug=post.slug %}">Delete Post</a>
 				</div>
 			{% endif %}
+		</div>
+		<div class="col-sm-6">
+			<!--Like button-->
+			<a href="{% url 'like_toggle' slug=post.slug %}" class="btn btn-default" id="like-button"><span class="glyphicon glyphicon-thumbs-up"></span> {{ post.likes.count }}</a>
 		</div>
 	</div>
 	<hr>
@@ -32,19 +46,22 @@
 		<h3>Comments</h3>
 		<p><strong>{{ user }}</strong></p>
 		<div class="row">
-			<form method="POST">
-				<div class="form-group col-sm-10">
-					{% csrf_token %}
-					{{ create_comment_form.text.errors }}
-					{{ create_comment_form.text }}
-				</div>
-				<button type="submit" class="btn btn-default col-sm-2" value="Post Comment">Comment</button>
-			</form>
+			<div class="form-group">
+				<form method="POST">
+					<div class="col-sm-10">
+						{% csrf_token %}
+						{{ create_comment_form.text.errors }}
+						{{ create_comment_form.text }}
+					</div>
+					<button type="submit" class="btn btn-default col-sm-2" value="Post Comment">Comment</button>
+				</form>
+			</div>
 		</div>
+		<br>
 		<!--Comment Section-->
 		<div class="comment-section">
-			{% if comments %}
-				{% for comment in comments %}
+			{% if comment_list %}
+				{% for comment in comment_list %}
 					<div class="row">
 						<p><strong>{{ comment.author }}
 						{% if comment.edited %}
@@ -56,7 +73,7 @@
 						</div>
 						<div class="col-sm-2">
 							{% if comment.author == user %}
-								<a href="{% url 'edit_comment' pk=comment.pk %}" class="btn btn-default">Edit Comment</a>
+								<a href="{% url 'edit_comment' slug=post.slug pk=comment.pk %}" class="btn btn-default">Edit Comment</a>
 							{% endif %}
 						</div>
 						<br><br>
@@ -70,12 +87,12 @@
 	<div class="row">
 		<ul class="pager">
 			{% if older_post %}
-				<li class="previous"><a href="{% url 'detail' pk=older_post.pk %}">Previous Post: {{ older_post }}</a></li>
+				<li class="previous"><a href="{% url 'detail' slug=older_post.slug %}">Previous Post: {{ older_post }}</a></li>
 			{% else %}
 				<li class="previous disabled"><a href="#">No Older Posts</a></li>
 			{% endif %}
 			{% if newer_post %}
-				<li class="next"><a href="{% url 'detail' pk=newer_post.pk %}">Next Post: {{ newer_post }}</a></li>
+				<li class="next"><a href="{% url 'detail' slug=newer_post.slug %}">Next Post: {{ newer_post }}</a></li>
 			{% else %}
 				<li class="next disabled"><a href="#">No Newer Posts</a></li>
 			{% endif %}

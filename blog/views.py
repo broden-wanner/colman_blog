@@ -15,9 +15,11 @@ def blogHomeView(request):
 	return render(request, 'index.html', {'posts': posts})
 
 @login_required
-def blogDetailView(request, pk):
+def blogDetailView(request, slug):
 	#Post Section
-	post = get_object_or_404(Post, pk=pk)
+	post = get_object_or_404(Post, slug=slug)
+	#Like and dislike buttons
+
 	#Creates newer and older post buttons
 	try:
 		older_post = Post.objects.filter(most_recent_date__lt=post.most_recent_date).order_by('-most_recent_date')[0]
@@ -29,9 +31,9 @@ def blogDetailView(request, pk):
 		newer_post = None
 	#Comment Section
 	try:
-		comments = Comment.objects.filter(post__pk=post.pk).order_by('-most_recent_date')
+		comment_list = Comment.objects.filter(post__pk=post.pk).order_by('-most_recent_date')
 	except (Comment.DoesNotExist, IndexError, ValueError):
-		comments = None
+		comment_list = None
 	#Create Comment Form
 	if request.method == "POST":
 		create_comment_form = CommentForm(request.POST, prefix="create")
@@ -43,10 +45,10 @@ def blogDetailView(request, pk):
 			comment.most_recent_date = timezone.now()
 			comment.save()
 			post.update_comments()
-			return redirect('detail', pk=post.pk)
+			return redirect('detail', slug=post.slug)
 	else:
 		create_comment_form = CommentForm(prefix="create")
-	return render(request, 'detail.html', {'post': post, 'newer_post': newer_post, 'older_post': older_post, 'comments': comments, 'create_comment_form': create_comment_form})
+	return render(request, 'detail.html', {'post': post, 'newer_post': newer_post, 'older_post': older_post, 'comment_list': comment_list, 'create_comment_form': create_comment_form})
 
 @login_required
 def blogCreateView(request):
@@ -65,8 +67,8 @@ def blogCreateView(request):
 	return render(request, 'create.html', {'form': form})
 
 @login_required
-def blogUpdateView(request, pk):
-	post = get_object_or_404(Post, pk=pk)
+def blogUpdateView(request, slug):
+	post = get_object_or_404(Post, slug=slug)
 	if request.method == "POST":
 		form = PostForm(request.POST, request.FILES, instance=post)
 		if form.is_valid() and post.author == request.user:
@@ -75,21 +77,21 @@ def blogUpdateView(request, pk):
 			post.most_recent_date = timezone.now()
 			post.create_embed_link()
 			post.save()
-			return redirect('detail', pk=post.pk)
+			return redirect('detail', slug=post.slug)
 	else:
 		form = PostForm(instance=post)
 	return render(request, 'edit.html', {'form': form, 'post': post})
 
 @login_required
-def blogDeleteView(request, pk):
-	post = get_object_or_404(Post, pk=pk)
+def blogDeleteView(request, slug):
+	post = get_object_or_404(Post, slug=slug)
 	if request.method == "POST" and post.author == request.user:
 		post.delete()
 		return redirect('index')
 	return render(request, 'delete.html', {'post': post})
 
 @login_required
-def blogEditComment(request, pk):
+def blogEditComment(request, slug, pk):
 	comment = get_object_or_404(Comment, pk=pk)
 	if request.method == "POST":
 		form = CommentForm(request.POST, instance=comment)
@@ -99,7 +101,16 @@ def blogEditComment(request, pk):
 			comment.most_recent_date = timezone.now()
 			comment.edited = True
 			comment.save()
-			return redirect('detail', pk=comment.post.pk)
+			return redirect('detail', slug=comment.post.slug)
 	else:
 		form = CommentForm(instance=comment)
 	return render(request, 'edit_comment.html', {'form': form, 'comment': comment})
+
+@login_required
+def blogToggleLike(request, slug):
+	post = get_object_or_404(Post, slug=slug)
+	if request.user in post.likes.all():
+		post.likes.remove(request.user)
+	else:
+		post.likes.add(request.user)
+	return redirect('detail', slug=post.slug)
