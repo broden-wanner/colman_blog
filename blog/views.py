@@ -61,7 +61,7 @@ def blogCreateView(request):
 			post.most_recent_date = timezone.now()
 			post.create_embed_link()
 			post.save()
-			return redirect('detail', pk=post.pk)
+			return redirect('detail', slug=post.slug)
 	else:
 		form = PostForm()
 	return render(request, 'create.html', {'form': form})
