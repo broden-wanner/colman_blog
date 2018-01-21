@@ -6,8 +6,8 @@ from django.conf import settings
 
 urlpatterns = [
 	path('', views.blogHomeView, name='index'),
+	path('post/quality-post/new/', views.blogCreateView, name='create'),
 	path('post/<slug:slug>/', views.blogDetailView, name='detail'),
-	path('post/new/', views.blogCreateView, name='create'),
 	path('post/<slug:slug>/edit', views.blogUpdateView, name='edit'),
 	path('post/<slug:slug>/delete', views.blogDeleteView, name='delete'),
 	path('post/<slug:slug>/comment/<int:pk>/edit', views.blogEditComment, name='edit_comment'),
