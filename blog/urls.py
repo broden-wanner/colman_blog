@@ -11,7 +11,7 @@ urlpatterns = [
 	path('post/<slug:slug>/edit', views.blogUpdateView, name='edit'),
 	path('post/<slug:slug>/delete', views.blogDeleteView, name='delete'),
 	path('post/<slug:slug>/comment/<int:pk>/edit', views.blogEditComment, name='edit_comment'),
-	path('post/<slug:slug>/like', views.blogToggleLike, name='like_toggle'),
+	path('post/<slug:slug>/<str:opinion>', views.blogToggleBoopUnboop, name='boop_unboop_toggle'),
 ]
 
 if settings.DEBUG:

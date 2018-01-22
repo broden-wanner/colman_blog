@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'accounts',
-    'chat',
+    #'chat',
     #'channels',
 ]
 
@@ -131,11 +131,11 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 #Email Setup
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = '*****'
-EMAIL_HOST_USER = 'poseidensea@gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_PASSWORD = '18wannerb'
+EMAIL_HOST_USER = '********'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 #Chat Setup

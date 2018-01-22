@@ -28,7 +28,7 @@
 					{% else %}
 						<p>Published on {{ post.published_date|date:"F jS, Y" }}</p>
 					{% endif %}
-					<p>{{ post.likes.count }} likes and {{ post.comment_count }} comments</p>
+					<p>{{ post.boops.count }} {% if post.boops.count == 1 %}boop{% else %}boops{% endif %}, {{ post.unboops.count }} {% if post.unboops.count == 1 %}unboop{% else %}unboops{% endif %}, and {{ post.comment_count }} {% if post.comment_count == 1 %}comment{% else %}comments{% endif %}</p>
 				</div>
 				{% if forloop.counter != posts|length %}
 					<hr>

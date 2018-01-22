@@ -20,7 +20,7 @@
 				{% else %}
 					<p>Published on {{ post.published_date|date:"F jS, Y" }}</p>
 				{% endif %}
-				<p>{{ post.likes.count }} likes and {{ comment_list|length }} comments</p>
+				<p>{{ post.boops.count }} {% if post.boops.count == 1 %}boop{% else %}boops{% endif %}, {{ post.unboops.count }} {% if post.unboops.count == 1 %}unboop{% else %}unboops{% endif %}, and {{ comment_list|length }} {% if comment_list|length == 1 %}comment{% else %}comments{% endif %}</p>
 			</div>
 			{% endif %}
 		</div>
@@ -30,14 +30,18 @@
 			<!--Displays options for editing only if the author is the logged in user -->
 			{% if user == post.author %}
 				<div class="btn-group" id="edit-delete-buttons">
-					<a class="btn btn-default" href="{% url 'edit' slug=post.slug %}">Edit Post</a>
-					<a class="btn btn-default" href="{% url 'delete' slug=post.slug %}">Delete Post</a>
+					<a class="btn btn-default" href="{% url 'edit' slug=post.slug %}"><span class="glyphicon glyphicon-edit"></span> Edit Post</a>
+					<a class="btn btn-default" href="{% url 'delete' slug=post.slug %}"><span class="glyphicon glyphicon-remove"></span> Delete Post</a>
 				</div>
 			{% endif %}
 		</div>
 		<div class="col-sm-6">
-			<!--Like button-->
-			<a href="{% url 'like_toggle' slug=post.slug %}" class="btn btn-default" id="like-button"><span class="glyphicon glyphicon-thumbs-up"></span> {{ post.likes.count }}</a>
+			<div class="btn-group" id="boop-unboop-buttons">
+				<!--Like button-->
+				<a href="{% url 'boop_unboop_toggle' slug=post.slug opinion='boop'%}" class="btn {% if booped_by_user %}pressed{% else %}btn-default{% endif %}"><span class="glyphicon glyphicon-thumbs-up"></span> {{ post.boops.count }}</a>
+				<!--Dislike button-->
+				<a href="{% url 'boop_unboop_toggle' slug=post.slug opinion='unboop' %}" class="btn {% if unbooped_by_user %}pressed{% else %}btn-default{% endif %}"><span class="glyphicon glyphicon-thumbs-down"></span> {{ post.unboops.count }}</a>
+			</div>
 		</div>
 	</div>
 	<hr>

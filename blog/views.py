@@ -18,8 +18,15 @@ def blogHomeView(request):
 def blogDetailView(request, slug):
 	#Post Section
 	post = get_object_or_404(Post, slug=slug)
-	#Like and dislike buttons
-
+	#boop and unboop buttons
+	if request.user in post.boops.all():
+		booped_by_user = True
+	else:
+		booped_by_user = False
+	if request.user in post.unboops.all():
+		unbooped_by_user = True
+	else:
+		unbooped_by_user = False
 	#Creates newer and older post buttons
 	try:
 		older_post = Post.objects.filter(most_recent_date__lt=post.most_recent_date).order_by('-most_recent_date')[0]
@@ -48,7 +55,15 @@ def blogDetailView(request, slug):
 			return redirect('detail', slug=post.slug)
 	else:
 		create_comment_form = CommentForm(prefix="create")
-	return render(request, 'detail.html', {'post': post, 'newer_post': newer_post, 'older_post': older_post, 'comment_list': comment_list, 'create_comment_form': create_comment_form})
+	return render(request, 'detail.html', {
+		'post': post,
+		'newer_post': newer_post,
+		'older_post': older_post,
+		'comment_list': comment_list,
+		'create_comment_form': create_comment_form,
+		'booped_by_user': booped_by_user,
+		'unbooped_by_user': unbooped_by_user,
+	})
 
 @login_required
 def blogCreateView(request):
@@ -107,10 +122,28 @@ def blogEditComment(request, slug, pk):
 	return render(request, 'edit_comment.html', {'form': form, 'comment': comment})
 
 @login_required
-def blogToggleLike(request, slug):
+def blogToggleBoopUnboop(request, slug, opinion):
 	post = get_object_or_404(Post, slug=slug)
-	if request.user in post.likes.all():
-		post.likes.remove(request.user)
-	else:
-		post.likes.add(request.user)
+	if opinion == 'boop':
+		#Handle boop without previous boop or unboop and adds it
+		if request.user not in post.boops.all() and request.user not in post.unboops.all():
+			post.boops.add(request.user)
+		#Handle boop with previous boop and removes it
+		elif request.user in post.boops.all() and request.user not in post.unboops.all():
+			post.boops.remove(request.user)
+		#Handle boop without previous boop but with previous unboop
+		elif request.user not in post.boops.all() and request.user in post.unboops.all():
+			post.boops.add(request.user)
+			post.unboops.remove(request.user)
+	if opinion == 'unboop':
+		#Handle unboop without previous unboop or boop and adds it
+		if request.user not in post.boops.all() and request.user not in post.unboops.all():
+			post.unboops.add(request.user)
+		#Handle boop with previous boop and removes it
+		elif request.user not in post.boops.all() and request.user in post.unboops.all():
+			post.unboops.remove(request.user)
+		#Handle boop without previous boop but with previous unboop
+		elif request.user in post.boops.all() and request.user not in post.unboops.all():
+			post.unboops.add(request.user)
+			post.boops.remove(request.user)
 	return redirect('detail', slug=post.slug)
