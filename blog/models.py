@@ -95,12 +95,3 @@ class Comment(models.Model):
 				return "1 year ago"
 			else:
 				return "%i years ago" % (elapsed_time)
-
-'''class Like(models.Model):
-	post = models.ForeignKey(Post, on_delete=models.CASCADE)
-	liker = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-	liked_date = models.DateTimeField(default=timezone.now)
-
-	def __str__(self):
-		return 'Like by %s on post %s' % (str(self.liker), str(self.post.title))
-'''
