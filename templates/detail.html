@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load staticfiles %}
+
 {% block content %}
 	<div class="row">
 		<div class="post">
@@ -10,7 +12,11 @@
 					<img src="{{ post.image.url }}" alt="Image for post {{ post.title }}" class="img-rounded img-responsive post-image">
 				{% endif %}
 				{% if post.youtube_video %}
-					<iframe width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+					<div class="youtube-video">
+						<div class="embed-responsive embed-responsive-16by9">
+							<iframe class="embed-responsive-item" width="560" height="315" src="{{ post.embed_link }}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+						</div>
+					</div>
 				{% endif %}
 			</div>
 			{% if post.published_date %}
@@ -39,7 +45,7 @@
 			<div class="btn-group" id="boop-unboop-buttons">
 				<!--Like button-->
 				<a href="{% url 'boop_unboop_toggle' slug=post.slug opinion='boop'%}" class="btn {% if booped_by_user %}pressed{% else %}btn-default{% endif %}"><span class="glyphicon glyphicon-thumbs-up"></span> {{ post.boops.count }}</a>
-				<!--Dislike button-->
+				<!--Unboop button-->
 				<a href="{% url 'boop_unboop_toggle' slug=post.slug opinion='unboop' %}" class="btn {% if unbooped_by_user %}pressed{% else %}btn-default{% endif %}"><span class="glyphicon glyphicon-thumbs-down"></span> {{ post.unboops.count }}</a>
 			</div>
 		</div>
