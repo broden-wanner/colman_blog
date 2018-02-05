@@ -29,7 +29,7 @@
 				    <div class="collapse navbar-collapse" id="main-navbar">
 						<a class="btn btn-default navbar-btn" href="{% url 'create' %}"><span class="glyphicon glyphicon-plus"></span> New Post</a>
 					    <ul class="nav navbar-nav navbar-right">
-					    	<li><a href="#"><span class="glyphicon glyphicon-user"></span> Hi, {{ user.username }}</a></li>
+					    	<li><a href="{% url 'user_view' %}"><span class="glyphicon glyphicon-user"></span> Hi, {{ user.username }}</a></li>
 						    <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 					    </ul>
 				    </div>

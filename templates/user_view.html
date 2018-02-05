@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row user-view">
+	{% if written_posts %}
+		<h1>Total Boops: {{ total_boops }}</h1>
+		<h1>Written Posts</h1>
+		<ul>
+		{% for post in written_posts %}
+			<li><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a></li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		<h1>Written Posts</h1>
+		<p>You really need to write some posts, sir.</p>
+	{% endif %}
+	<hr>
+	<h1>Booped Posts</h1>
+	{% if booped_posts %}
+		<ul>
+		{% for post in booped_posts %}
+			<li><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a></li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		<p>You really need to boop some posts, sir.</p>
+	{% endif %}
+{% endblock %}

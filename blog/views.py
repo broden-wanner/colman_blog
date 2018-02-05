@@ -15,6 +15,15 @@ def blogHomeView(request):
 	return render(request, 'index.html', {'posts': posts})
 
 @login_required
+def blogUserView(request):
+	written_posts = Post.objects.filter(author=request.user).order_by('-most_recent_date')
+	booped_posts = Post.objects.filter(boops=request.user).order_by('-most_recent_date')
+	total_boops = 0
+	for post in written_posts:
+		total_boops += post.boops.count()
+	return render(request, 'user_view.html', {'written_posts': written_posts, 'booped_posts': booped_posts, 'total_boops': total_boops})
+
+@login_required
 def blogDetailView(request, slug):
 	#Post Section
 	post = get_object_or_404(Post, slug=slug)

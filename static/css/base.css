@@ -60,12 +60,18 @@ main {
 .navbar {
     border-radius: 0px;
     background-color: black;
+    height: 4em;
 }
 
 .navbar-inverse .navbar-header .navbar-brand {
     font-family: 'Lobster';
     font-size: 2.2em;
     color: #FFE800;
+}
+
+#main-navbar .navbar-btn {
+    border-color: #A09D9E;
+    color: #A09D9E;
 }
 
 /* Main stuff */
@@ -82,7 +88,7 @@ h1, h2, h3, h4 {
     background-color: black;
 }
 
-.pager li a:hover, .pager li a:active, .btn-default:hover, .btn-default:active, .pressed {
+.pager li a:hover, .pager li a:active, .btn-default:hover, .btn-default:active, .pressed, #main-navbar .navbar-btn:hover {
     color: black;
     background-color: #FFE800;
 }
@@ -127,7 +133,7 @@ h1, h2, h3, h4 {
 }
 
 .published-edited-dates {
-    color: #6B7279;
+    color: #A09D9E;
 }
 
 #boop-unboop-buttons {
@@ -144,6 +150,11 @@ h1, h2, h3, h4 {
         float: left;
         margin-left: -15px;
     }
+}
+
+.user-view a {
+    color: black;
+    line-height: 2em;
 }
 
 /* Footer Stuff */
