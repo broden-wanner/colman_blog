@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="col-sm-9">
 	<h1>Edit Post</h1>
 	{% if post.author == user %}
 		<div class="form-group">
@@ -13,4 +14,5 @@
 	{% else %}
 		<p>Um... sir, you can't edit this. I don't know how you got here, but just leave.</p>
 	{% endif %}
+</div>
 {% endblock %}

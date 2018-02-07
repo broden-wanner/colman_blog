@@ -5,14 +5,37 @@ from django.http import Http404
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from .models import Post, Comment
+from django.contrib.auth.models import User
 from .forms import PostForm, CommentForm
+from collections import OrderedDict
+
+def make_leaderboard():
+	all_users = User.objects.all()
+	user_scores = []
+	for user in all_users:
+		score = 0
+		for post in Post.objects.filter(author=user):
+			#Adds 2 for the boops
+			score += post.boops.count() * 2
+			#Adds 1 for the post
+			score += 1
+		user_scores.append(score)
+	#Create dictionary to tie together users and scores
+	users_and_scores = {}
+	i = 0
+	for user in all_users:
+		users_and_scores[user] = user_scores[i]
+		i += 1
+	#Sorts based on scores
+	leaderboard = OrderedDict(sorted(users_and_scores.items(), key=lambda t: t[1], reverse=True))
+	return leaderboard
 
 @login_required
 def blogHomeView(request):
 	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-most_recent_date')
 	for post in posts:
 		post.update_comments()
-	return render(request, 'index.html', {'posts': posts})
+	return render(request, 'index.html', {'posts': posts, 'leaderboard': make_leaderboard()})
 
 @login_required
 def blogUserView(request):
@@ -21,7 +44,12 @@ def blogUserView(request):
 	total_boops = 0
 	for post in written_posts:
 		total_boops += post.boops.count()
-	return render(request, 'user_view.html', {'written_posts': written_posts, 'booped_posts': booped_posts, 'total_boops': total_boops})
+	return render(request, 'user_view.html', {
+		'written_posts': written_posts,
+		'booped_posts': booped_posts,
+		'total_boops': total_boops,
+		'leaderboard': make_leaderboard(),
+	})
 
 @login_required
 def blogDetailView(request, slug):

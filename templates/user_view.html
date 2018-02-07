@@ -1,28 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row user-view">
-	{% if written_posts %}
-		<h1>Total Boops: {{ total_boops }}</h1>
-		<h1>Written Posts</h1>
-		<ul>
-		{% for post in written_posts %}
-			<li><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a></li>
+<div class="col-sm-8">
+	<div class="row user-view">
+		{% if written_posts %}
+			<h1>Total Boops: {{ total_boops }}</h1>
+			<h1>Written Posts</h1>
+			<ul>
+			{% for post in written_posts %}
+				<li><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a></li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<h1>Written Posts</h1>
+			<p>You really need to write some posts, sir.</p>
+		{% endif %}
+		<hr>
+		<h1>Booped Posts</h1>
+		{% if booped_posts %}
+			<ul>
+			{% for post in booped_posts %}
+				<li><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a></li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>You really need to boop some posts, sir.</p>
+		{% endif %}
+	</div>
+</div>
+<div class="col-sm-4">
+	<div id="leaderboard">
+		<h1><span title="Users get 2 points for each boop and 1 point for each post">Leaderboard</span></h1>
+		<ol>
+		{% for blogger, score in leaderboard.items %}
+			<li>{{ blogger }} with a score of {{ score }}</li>
 		{% endfor %}
-		</ul>
-	{% else %}
-		<h1>Written Posts</h1>
-		<p>You really need to write some posts, sir.</p>
-	{% endif %}
-	<hr>
-	<h1>Booped Posts</h1>
-	{% if booped_posts %}
-		<ul>
-		{% for post in booped_posts %}
-			<li><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a></li>
-		{% endfor %}
-		</ul>
-	{% else %}
-		<p>You really need to boop some posts, sir.</p>
-	{% endif %}
+		</ol>
+	</div>
+</div>
 {% endblock %}

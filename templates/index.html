@@ -3,6 +3,7 @@
 {% load staticfiles %}
 
 {% block content %}
+<div class="col-sm-9">
 	{% for post in posts %}
 		<div class="row">
 			<div class="post">
@@ -41,4 +42,15 @@
 		</div>
 	{% endfor %}
 	<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+</div>
+<div class="col-sm-3">
+	<div id="leaderboard">
+		<h1><span title="Users get 2 points for each boop and 1 point for each post">Leaderboard</span></h1>
+		<ol>
+		{% for blogger, score in leaderboard.items %}
+			<li>{{ blogger }} with a score of {{ score }}</li>
+		{% endfor %}
+		</ol>
+	</div>
+</div>
 {% endblock %}
