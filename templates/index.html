@@ -8,7 +8,7 @@
 		<div class="row">
 			<div class="post">
 				<!--Displays title of post, author, and 'new' label if it was publushed or edited within a day-->
-				<h1><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a> <small>by {{ post.author }}</small>
+				<h1><a href="{% url 'detail' slug=post.slug %}">{{ post.title }}</a> <small>by {{ post.author }} </small>
 				{% if post.was_published_or_edited_recently %}
 					<span class="label label-default">New</span>
 				{% endif %}

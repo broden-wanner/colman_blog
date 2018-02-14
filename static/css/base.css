@@ -1,3 +1,7 @@
+html, body {
+    cursor: url(../images/cursor_hawk.png), auto;
+}
+
 h1 a {
     color: #000000;
     font-family: 'Lobster';
@@ -7,7 +11,7 @@ main {
 	margin-left: 40px;
     margin-right: 40px;
     min-height: calc(100vh - 162px);
-    margin-bottom: 20px
+    margin-bottom: 20px;
 }
 
 .noselect {
@@ -164,7 +168,11 @@ h1, h2, h3, h4 {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-iframe, img {
+#leaderboard h1 {
+    word-wrap: break-word;
+}
+
+img {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
