@@ -12,7 +12,8 @@ urlpatterns = [
 	path('post/<slug:slug>/delete', views.blogDeleteView, name='delete'),
 	path('post/<slug:slug>/comment/<int:pk>/edit', views.blogEditComment, name='edit_comment'),
 	path('post/<slug:slug>/<str:opinion>', views.blogToggleBoopUnboop, name='boop_unboop_toggle'),
-	path('userstats', views.blogUserView, name='user_view')
+	path('userstats', views.blogUserView, name='user_view'),
+	path('flappyhawk', views.flappyHawk, name='flappy_hawk'),
 ]
 
 if settings.DEBUG:

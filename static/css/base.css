@@ -177,6 +177,16 @@ img {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+canvas {
+    background: rgb(227, 254, 255);
+    display: block;
+    margin: 0 auto;
+    margin-top: 30px;
+    cursor: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin-bottom: 50px;
+}
+
 /* Footer Stuff */
 footer {
     background-color: #FFE800;

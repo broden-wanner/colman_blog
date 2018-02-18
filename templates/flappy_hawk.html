@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="text-center">Flappy Hawk</h1>
+
+<canvas height="400" width="600" id="flappy-hawk"></canvas>
+
+<script type="text/javascript">
+	//Global Variables
+	var canvas = document.getElementById("flappy-hawk");
+	var ctx = canvas.getContext("2d");
+	var gravity = 9.8;
+	var scrollerSpeed = 1;
+	var spacebarPressed = false;
+	var spacebarHeldDown = false;
+	var score = 0;
+	var startGame = true;
+	var paused = true;
+	var sound_choice = 0;
+	var birdSound = new Audio('../static/audio/bird_sound_mp3.m4a');
+	var eczema = new Audio('../static/audio/eczema_mp3.m4a');
+	var hawkScreech = new Audio('../static/audio/hawk_screech_mp3.m4a');
+
+	//Reset Canvas
+	function resetCanvas() {
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+	}
+
+	//Hawk Constructor
+	function Hawk(startY) {
+		this.startY = startY;
+		this.initialY = startY;
+		this.y = startY;
+		this.x = 20;
+		this.theoreticalX = 0;
+		this.velocity = -35;
+		this.theta = Math.PI / -4;
+		this.width = 40;
+		this.height = 40;
+		this.img = new Image();
+		this.img.src = "../static/images/hawk.png";
+		this.rotated = false;
+		this.padding = 5;
+		this.dead = false;
+		this.draw = function () {
+			//this.y = constrain(this.y, 0, canvas.height);
+			if(this.rotated) {
+				ctx.translate(this.x + this.width/2, this.y + this.height/2);
+			    ctx.rotate(-20 * Math.PI/180);
+				ctx.drawImage(this.img, -this.width/2, -this.height/2, this.width, this.height);
+			} else {
+				ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+			}
+		}
+		this.fly = function () {
+			//Resets the x position so that the object goes upward
+			this.theoreticalX = 0;
+			this.initialY = this.y;
+			this.rotated = true;
+		}
+		this.drop = function () {
+			//Models projectile motion using the two equations
+			//x = cos(theta)*v*t
+			//y = y0 + sin(theta)*v*t + 1/2*g*t^2
+			this.y = this.initialY + Math.tan(this.theta)*this.theoreticalX + (gravity*Math.pow(this.theoreticalX, 2))/(2*Math.pow(Math.cos(this.theta)*this.velocity, 2))
+			//Sets state of rotation based on sign of speed
+			//Based on the derivative of the above projectile motion equation
+			var dy = Math.tan(this.theta) + (2*gravity*this.theoreticalX)/(2*Math.pow(Math.cos(this.theta)*this.velocity, 2));
+			if(dy < 0) {
+				this.rotated = true;
+			} else {
+				this.rotated = false;
+			}
+		}
+		this.animate = function () {
+			this.theoreticalX += scrollerSpeed + 2;
+		}
+	}
+
+	//Grass Constructor
+	function Grass(x) {
+		this.x = x;
+		this.length = Math.floor(canvas.width / 23);
+		this.img = new Image();
+		this.img.src = "../static/images/grass.png";
+		this.draw = function () {
+			ctx.drawImage(this.img, this.x, canvas.height * 0.85, this.length, this.length);
+			if(this.x < -1 * this.length) {
+				this.x = canvas.width;
+			}
+		}
+		this.animate = function () {
+			this.x -= scrollerSpeed;
+		}
+	}
+
+	//Gateway Constructor
+	function PipeGateway(x) {
+		this.x = x;
+		this.width = 40;
+		this.topPipeImg = new Image();
+		this.topPipeImg.src = "../static/images/top_pipe.png";
+		this.topOfTopPipe = new Image();
+		this.topOfTopPipe.src = "../static/images/top_of_top_pipe.png";
+		this.bottomPipe = new Image();
+		this.bottomPipe.src = "../static/images/bottom_pipe.png";
+		this.topOfBottomPipe = new Image();
+		this.topOfBottomPipe.src = "../static/images/top_of_bottom_pipe.png";
+		this.topperHeight = 20;
+		this.topperWidth = this.width + 5;
+		this.opening = 90;
+		this.alreadyScored = false;
+		this.separation = Math.floor((canvas.width + this.width) / 3);
+		this.generateChangeOfLength = function () {
+			return Math.random() * 2 - 1;
+		}
+		this.changeOfLength = this.generateChangeOfLength();
+		this.generateTopPipeLength = function () {
+			return Math.floor(Math.random() * (canvas.height * 0.85 - this.opening - this.topperHeight) + this.topperHeight);
+		}
+		this.topPipeLength = this.generateTopPipeLength();
+		this.draw = function() {
+			//top portion of gateway
+			ctx.drawImage(
+				this.topPipeImg, 
+				this.x, 
+				0, 
+				this.width, 
+				this.topPipeLength - this.topperHeight
+			);
+			ctx.drawImage(
+				this.topOfTopPipe,
+				this.x - this.topperWidth/2 + this.width/2,
+				this.topPipeLength - this.topperHeight,
+				this.topperWidth,
+				this.topperHeight
+			);
+			//bottom portion of gateway
+			ctx.drawImage(
+				this.topOfBottomPipe, 
+				this.x - this.topperWidth/2 + this.width/2, 
+				this.topPipeLength + this.opening, 
+				this.topperWidth, 
+				this.topperHeight
+			);
+			ctx.drawImage(
+				this.bottomPipe, 
+				this.x, 
+				this.topPipeLength + this.opening + this.topperHeight, 
+				this.width, 
+				canvas.height - this.opening - this.topPipeLength - this.topperHeight
+			);
+		}
+		this.collidedWithObject = function(n) {
+			//See if object goes through opening
+			//Make sure object is in pipe x when entering from the left
+			//and is within pipe x when leaving to the right
+			if(n.x + n.width - n.padding >= this.x - (this.topperWidth - this.width)/2 && n.x + n.padding<= this.x + this.width + (this.topperWidth - this.width)/2) {
+				//Is within opening on top
+				//Is within opening on bottom
+				if(n.y + n.padding >= this.topPipeLength && n.y + n.height - n.padding <= this.topPipeLength + this.opening) {
+					return false;
+				} else {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		}
+		this.scoreObject = function(n) {
+			if(n.x > this.x + this.width + (this.topperWidth - this.width)/2 - 1 && n.x < this.x + this.width + (this.topperWidth - this.width)/2 + 1 && !this.alreadyScored) {
+				if(sound_choice == 0) {
+					birdSound.play();
+					sound_choice = 1;
+				} else if(sound_choice = 1) {
+					eczema.play();
+					sound_choice = 0;
+				}
+				score++;
+				this.alreadyScored = true;
+			}
+		}
+		this.animate = function () {
+			this.x -= scrollerSpeed;
+			//Snakes the gateway and gives new height and length change
+			if(this.x < -1 * this.topperWidth) {
+				this.x = canvas.width;
+				this.topPipeLength = this.generateTopPipeLength();
+				this.changeOfLength = this.generateChangeOfLength();
+				this.alreadyScored = false;
+				if(score >= 5) {
+					this.opening -= 1;
+				}
+			}
+			//Varies height of opening
+			if(score >= 3) {
+				this.topPipeLength += this.changeOfLength;
+				if(this.topPipeLength > canvas.height * 0.85 - this.opening - this.topperHeight || this.topPipeLength < 0) {
+					this.changeOfLength *= -1;
+				}
+			}
+		}
+	}
+
+	//Create Game Pieces
+	var hawk = new Hawk(50);
+	var gatewayArray = [];
+	for(var i = 0; i < 3; i++) {
+		var gateway = new PipeGateway(i);
+		gateway.x = i * gateway.separation + 200;
+		gatewayArray.push(gateway);
+	}
+	var grassField = [];
+	for(var i = 0; i < 25; i++) {
+		var grassPiece = new Grass(i);
+		grassPiece.x = i * grassPiece.length;
+		grassField.push(grassPiece);
+	}
+
+	//Restarts the game
+	function initializeGame() {
+		for(var i = 0; i < gatewayArray.length; i++) {
+			gatewayArray[i].x = i * gatewayArray[i].separation + 200;
+			gatewayArray[i].topPipeLength = gatewayArray[i].generateTopPipeLength();
+			gatewayArray[i].changeOfLength = gatewayArray[i].generateChangeOfLength();
+		}
+		hawk.initialY = hawk.startY;
+		hawk.y = hawk.startY;
+		hawk.theoreticalX = 0;
+		score = 0;
+	}
+
+	//Draw Score
+	function drawScore() {
+		resetCanvas();
+		ctx.textAlign = "left";
+		ctx.font = "16px Arial";
+		ctx.fillStyle = "#000000";
+		ctx.fillText("Score: " + score, 8, 20);
+	}
+
+	//Draw Beginning and End Information
+	function drawInfo(gameState) {
+		resetCanvas();
+		var boxWidth = 225;
+		var boxHeight = 100;
+		ctx.fillStyle = "rgba(252, 232, 0, 0.8)";
+		ctx.fillRect((canvas.width - boxWidth)/2, (canvas.height - boxHeight)/2, boxWidth, boxHeight);
+		ctx.fillStyle = "#000000";
+		ctx.textAlign = "center";
+		if(gameState == "begin") {
+			ctx.font = "20px Lobster";
+			ctx.fillText("Welcome to Flappy Hawk!", canvas.width / 2, canvas.height / 2 - 15);
+			ctx.font = "12px Arial";
+			ctx.fillText("Press the spacebar to begin!", canvas.width / 2, canvas.height / 2 + 5);
+			ctx.fillText("(Press p to pause and r to restart)", canvas.width / 2, canvas.height / 2 + 25);
+		} else if(gameState == "end") {
+			ctx.font = "20px Lobster";
+			ctx.fillText("And you died!", canvas.width / 2, canvas.height / 2 - 10);
+			ctx.font = "12px Arial";
+			ctx.fillText("Press r to restart...", canvas.width / 2, canvas.height / 2 + 20);
+		} else if(gameState == "paused") {
+			ctx.font = "20px Lobster";
+			ctx.fillText("You be paused!", canvas.width / 2, canvas.height / 2 - 10);
+			ctx.font = "12px Arial";
+			ctx.fillText("Press p to unpause...", canvas.width / 2, canvas.height / 2 + 20);
+		}
+	}
+
+	//Event Handlers
+	document.addEventListener("keydown", keyDownHandler, false);
+	document.addEventListener("keyup", keyUpHandler, false);
+	function togglePause() {
+	    if(!paused) {
+	        paused = true;
+	    } else if(paused) {
+			paused = false;
+	    }
+	}
+	function keyDownHandler(e) {
+		//Stops spacebar scrolling
+		if (e.keyCode == 32 && e.target == document.body) {
+			e.preventDefault();
+		}
+		//If spacebar is pressed
+		if(e.keyCode == 32 && !hawk.dead) {
+			spacebarPressed = true;
+			if(startGame) {
+				startGame = false;
+				togglePause();
+			}
+		} else {
+			spacebarPressed = false;
+		}
+		//If p is pressed
+		if(e.keyCode == 80 && !startGame && !hawk.dead) {
+			togglePause();
+		}
+		//If r is pressed
+		if(e.keyCode == 82 && !startGame) {
+			initializeGame();
+			if(hawk.dead) {
+				hawk.dead = false;
+				paused = false;
+			}
+		}
+	}
+	function keyUpHandler(e) {
+		if(e.keyCode == 32) {
+			spacebarPressed = false;
+			spacebarHeldDown = false;
+		}
+	}
+
+	//Animation Function
+	function animateCanvas () {
+		//Update Grass
+		for(var i = 0; i < grassField.length; i++) {
+			grassField[i].animate();
+		}
+
+		//Update Gateways
+		for(var i = 0; i < gatewayArray.length; i++) {
+			var gateway = gatewayArray[i];
+			gateway.animate();
+			//Test Hawk Collisions and scoring
+			if(gateway.collidedWithObject(hawk) || hawk.y + hawk.height > canvas.height) {
+				hawk.dead = true;
+				hawkScreech.play();
+			}
+			gateway.scoreObject(hawk);
+		}
+
+		//Update Hawk
+		if(spacebarPressed && !spacebarHeldDown) {
+			hawk.fly();
+			spacebarHeldDown = true;
+		} else {
+			hawk.drop();
+		}
+		hawk.animate();
+
+		resetCanvas();
+	}
+
+	//Main Draw Function
+	function draw() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		
+		//Draw Ground
+		ctx.fillStyle = "brown";
+		ctx.fillRect(0, canvas.height * 0.90, canvas.width, canvas.height * 0.10);
+
+		//Draw Grass
+		for(var i = 0; i < grassField.length; i++) {
+			grassField[i].draw();
+		}
+
+		//Draw Gateways
+		for(var i = 0; i < gatewayArray.length; i++) {
+			gatewayArray[i].draw();
+		}
+
+		//Draw Hawk
+		hawk.draw();
+
+		//Score, yeah!!
+		drawScore();
+
+		//Draws info and animates the canvas
+		if(!paused) {
+			animateCanvas();
+		} else if(paused && startGame && !hawk.dead) {
+			drawInfo("begin");
+		} else if(paused && !hawk.dead) {
+			drawInfo("paused");
+		}
+
+		//Handles the hawk dying
+		if(hawk.dead) {
+			drawInfo("end");
+			paused = true;
+		}
+
+		resetCanvas();
+		requestAnimationFrame(draw);
+	}
+
+	draw();
+	
+</script>
+
+{% endblock %}

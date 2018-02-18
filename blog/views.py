@@ -184,3 +184,7 @@ def blogToggleBoopUnboop(request, slug, opinion):
 			post.unboops.add(request.user)
 			post.boops.remove(request.user)
 	return redirect('detail', slug=post.slug)
+
+@login_required
+def flappyHawk(request):
+	return render(request, 'flappy_hawk.html')
