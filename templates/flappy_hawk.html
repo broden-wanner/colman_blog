@@ -6,6 +6,8 @@
 
 <canvas height="400" width="600" id="flappy-hawk"></canvas>
 
+<p id="size-message" class="text-center"></p>
+
 <script type="text/javascript">
 	//Global Variables
 	var canvas = document.getElementById("flappy-hawk");
@@ -21,6 +23,22 @@
 	var birdSound = new Audio('../static/audio/bird_sound_mp3.m4a');
 	var eczema = new Audio('../static/audio/eczema_mp3.m4a');
 	var hawkScreech = new Audio('../static/audio/hawk_screech_mp3.m4a');
+
+	//Handles display for devices with smaller viewports
+	function displaySettings () {
+		var displayWidth = (window.innerWidth < screen.width) ? window.innerWidth : screen.width;
+		var tooSmallMessage = document.getElementById("size-message");
+		if(displayWidth < canvas.width) {
+			canvas.style.display = "none";
+			tooSmallMessage.textContent = "Your device is too small to play flappy hawk :(";
+
+		} else {
+			canvas.style.display = "block";
+			tooSmallMessage.textContent = "";
+		}
+	}
+	window.addEventListener("load", displaySettings);
+	window.addEventListener("resize", displaySettings);
 
 	//Reset Canvas
 	function resetCanvas() {
@@ -303,6 +321,8 @@
 			if(hawk.dead) {
 				hawk.dead = false;
 				paused = false;
+				hawkScreech.pause();
+				hawkScreech.currentTime = 0;
 			}
 		}
 	}

@@ -8,6 +8,7 @@ h1 a {
 }
 
 main {
+    margin-top: 80px;
 	margin-left: 40px;
     margin-right: 40px;
     min-height: calc(100vh - 162px);
@@ -64,7 +65,7 @@ main {
 .navbar {
     border-radius: 0px;
     background-color: black;
-    height: 4em;
+    min-height: 4em;
     cursor: url(../images/cursor_hawk_yellow.png), auto;
 }
 
@@ -74,7 +75,7 @@ main {
     color: #FFE800;
 }
 
-#main-navbar .navbar-btn {
+#mainNavbar .navbar-btn {
     border-color: #A09D9E;
     color: #A09D9E;
 }
