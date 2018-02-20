@@ -4,31 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from .models import Post, Comment
+from .models import Post, Comment, Score
 from django.contrib.auth.models import User
 from .forms import PostForm, CommentForm
 from collections import OrderedDict
 
 def make_leaderboard():
-	all_users = User.objects.all()
-	user_scores = []
-	for user in all_users:
-		score = 0
-		for post in Post.objects.filter(author=user):
-			#Adds 2 for the boops
-			score += post.boops.count() * 2
-			#Adds 1 for the post
-			score += 1
-		user_scores.append(score)
-	#Create dictionary to tie together users and scores
-	users_and_scores = {}
-	i = 0
-	for user in all_users:
-		users_and_scores[user] = user_scores[i]
-		i += 1
-	#Sorts based on scores
-	leaderboard = OrderedDict(sorted(users_and_scores.items(), key=lambda t: t[1], reverse=True))
-	return leaderboard
+	scores = Score.objects.all().order_by('-score')
+	for score in scores:
+		score.update_score()
+	return scores
 
 @login_required
 def blogHomeView(request):

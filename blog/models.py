@@ -42,6 +42,28 @@ class Post(models.Model):
 			end_code = self.youtube_video[self.youtube_video.find('=') + 1:]
 			self.embed_link = 'https://www.youtube.com/embed/' + end_code + '?rel=0'
 
+class Score(models.Model):
+	user = models.OneToOneField('auth.User', on_delete=models.CASCADE, primary_key=True)
+	score = models.IntegerField(default=0)
+
+	def __str__(self):
+		return "Score of %i for %s" % (self.score, self.user.username)
+
+	def update_score(self, *additional_scores):
+		user_posts = Post.objects.filter(author=self.user)
+		user_score = 0
+		for post in user_posts:
+			#Add 2 for boops
+			user_score += post.boops.count() * 2
+			#Add 1 for post
+			user_score += 1
+			#Subtract 1 for unboops
+			user_score -= post.unboops.count()
+		self.score = user_score
+		for score in additional_scores:
+			self.score += score
+		self.save()
+
 class Comment(models.Model):
 	post = models.ForeignKey('Post', on_delete=models.CASCADE)
 	author = models.ForeignKey('auth.User', on_delete=models.CASCADE)

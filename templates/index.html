@@ -43,12 +43,13 @@
 	{% endfor %}
 	<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
 </div>
+<!--The Leaderboard-->
 <div class="col-sm-3">
 	<div id="leaderboard">
 		<h1><span title="Users get 2 points for each boop and 1 point for each post">Leaderboard</span></h1>
 		<ol>
-		{% for blogger, score in leaderboard.items %}
-			<li>{{ blogger }} with a score of {{ score }}</li>
+		{% for score in leaderboard %}
+			<li>{{ score.user }} with a score of {{ score.score }}</li>
 		{% endfor %}
 		</ol>
 	</div>
