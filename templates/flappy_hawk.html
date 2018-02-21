@@ -317,13 +317,16 @@
 		}
 		//If r is pressed
 		if(e.keyCode == 82 && !startGame) {
-			initializeGame();
-			if(hawk.dead) {
+			if(!paused) {
+				initializeGame();
+			} else if(hawk.dead) {
+				initializeGame();
 				hawk.dead = false;
 				paused = false;
 				hawkScreech.pause();
 				hawkScreech.currentTime = 0;
 			}
+
 		}
 	}
 	function keyUpHandler(e) {

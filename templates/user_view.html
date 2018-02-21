@@ -31,7 +31,7 @@
 <!--The Leaderboard-->
 <div class="col-sm-3">
 	<div id="leaderboard">
-		<h1><span title="Users get 2 points for each boop and 1 point for each post">Leaderboard</span></h1>
+		<h1><span title="Users get 2 points for each boop, -1 points for each unboop, and 1 point for each post">Leaderboard</span></h1>
 		<ol>
 		{% for score in leaderboard %}
 			<li>{{ score.user }} with a score of {{ score.score }}</li>

@@ -19,6 +19,11 @@
 						</div>
 					</div>
 				{% endif %}
+				{% if post.title == "Carter" %}
+					<video controls loop width="240" id="carter-video">
+						<source src="{% static 'videos/carter.mp4' %}" type="video/mp4">
+					</video>
+				{% endif %}
 			</div>
 			{% if post.published_date %}
 			<div class="published-edited-dates">

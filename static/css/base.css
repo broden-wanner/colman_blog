@@ -134,6 +134,13 @@ h1, h2, h3, h4 {
     }
 }
 
+@media screen and (max-width: 300px) {
+    #carter-video {
+        width: 100%;
+        height: auto;
+    }
+}
+
 .post-body {
     margin-bottom: 20px;
 }
