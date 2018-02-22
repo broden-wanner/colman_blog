@@ -20,7 +20,9 @@
 					</div>
 				{% endif %}
 				{% if post.title == "Carter" %}
-					<video loop controls="true" width="240" src="{% static 'videos/carter.mp4' %}" type="video/mp4" id="carter-video"></video>
+					<video controls loop width="240" id="carter-video">
+						<source src="{% static 'videos/carter.mp4' %}" type="video/mp4">
+					</video>
 				{% endif %}
 			</div>
 			{% if post.published_date %}
