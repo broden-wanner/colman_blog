@@ -17,9 +17,10 @@ def make_leaderboard():
 			new_user_score = Score(user=user)
 			new_user_score.save()
 
-	scores = Score.objects.all().order_by('-score')
+	scores = Score.objects.all()
 	for score in scores:
 		score.update_score()
+	scores.order_by('-score')
 	return scores
 
 @login_required
