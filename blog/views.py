@@ -10,6 +10,13 @@ from .forms import PostForm, CommentForm
 from collections import OrderedDict
 
 def make_leaderboard():
+	for user in User.objects.all():
+		try:
+			user_score_clone = Score.objects.get(user=user)
+		except (Score.DoesNotExist):
+			new_user_score = Score(user=user)
+			new_user_score.save()
+
 	scores = Score.objects.all().order_by('-score')
 	for score in scores:
 		score.update_score()

@@ -127,7 +127,7 @@
 		this.topOfBottomPipe.src = "../static/images/top_of_bottom_pipe.png";
 		this.topperHeight = 20;
 		this.topperWidth = this.width + 5;
-		this.opening = 90;
+		this.opening = 100;
 		this.alreadyScored = false;
 		this.separation = Math.floor((canvas.width + this.width) / 3);
 		this.generateChangeOfLength = function () {
@@ -212,7 +212,7 @@
 				}
 			}
 			//Varies height of opening
-			if(score >= 3) {
+			if(score >= 5) {
 				this.topPipeLength += this.changeOfLength;
 				if(this.topPipeLength > canvas.height * 0.85 - this.opening - this.topperHeight || this.topPipeLength < 0) {
 					this.changeOfLength *= -1;
