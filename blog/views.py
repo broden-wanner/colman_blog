@@ -27,7 +27,7 @@ def make_leaderboard():
 
 @login_required
 def blogHomeView(request):
-	posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-most_recent_date')
+	posts = Post.objects.filter(published_date__lte=timezone.now(), author__is_active=True).order_by('-most_recent_date')
 	for post in posts:
 		post.update_comments()
 	return render(request, 'index.html', {'posts': posts, 'leaderboard': make_leaderboard()})
