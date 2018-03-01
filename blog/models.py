@@ -12,11 +12,12 @@ class Post(models.Model):
 	edited_date = models.DateTimeField(blank=True, null=True)
 	most_recent_date = models.DateTimeField(blank=True, null=True)
 	comment_count = models.IntegerField(default=0)
-	boops = models.ManyToManyField('auth.User', related_name='post_boops')
-	unboops = models.ManyToManyField('auth.User', related_name='post_unboops')
+	boops = models.ManyToManyField('auth.User', related_name='post_boops', blank=True)
+	unboops = models.ManyToManyField('auth.User', related_name='post_unboops', blank=True)
 	image = models.ImageField(blank=True, null=True, upload_to='images/')
 	youtube_video = models.URLField(max_length=300, blank=True, null=True)
 	embed_link = models.URLField(max_length=300, blank=True, null=True)
+	show = models.BooleanField(default=True)
 
 	def __str__(self):
 		return self.title
