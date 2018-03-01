@@ -21,7 +21,7 @@ def make_leaderboard():
 	scores = Score.objects.filter(user__is_active=True)
 	for score in scores:
 		score.update_score()
-	scores.order_by('-score')
+	scores = Score.objects.order_by('-score')
 	return scores
 
 @login_required
