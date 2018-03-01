@@ -17,11 +17,12 @@ def make_leaderboard():
 		except (Score.DoesNotExist):
 			new_user_score = Score(user=user)
 			new_user_score.save()
-	#Filters scores of only active users
-	scores = Score.objects.filter(user__is_active=True)
+	#Updates all scores
+	scores = Score.objects.all()
 	for score in scores:
 		score.update_score()
-	scores = Score.objects.order_by('-score')
+	#Filters scores of only active users
+	scores = Score.objects.filter(user__is_active=True).order_by('-score')
 	return scores
 
 @login_required
